@@ -1,0 +1,284 @@
+1.Implement a function that checks whether a given string is a palindrome or not. 
+----------------------------------------------------------------------------------
+  
+ fn is_palindrome(input: &str) -> bool {
+    let input = input.to_lowercase(); 
+    let reversed_input: String = input.chars().rev().collect(); 
+    input == reversed_input
+
+fn main() {
+    let input = "A man a plan a canal Panama";
+    let is_palindrome = is_palindrome(input);
+    println!("Is '{}' a palindrome? {}", input, is_palindrome);
+}
+
+
+2.Given a sorted array of integers, implement a function that returns the index of the first occurrence of a given number.
+----------------------------------------------------------------------------------------------------------------------------
+
+  fn find_first_occurrence(arr: &[i32], num: i32) -> Option<usize> {
+    let mut low = 0;
+    let mut high = arr.len() - 1;
+
+    while low <= high {
+        let mid = (low + high) / 2;
+
+        if arr[mid] < num {
+            low = mid + 1;
+        } else if arr[mid] > num {
+            high = mid - 1;
+        } else {
+            if mid == 0 || arr[mid - 1] != num {
+                return Some(mid);
+            } else {
+                high = mid - 1;
+            }
+        }
+    }
+
+    None
+}
+
+fn main() {
+    let arr = [1, 3, 3, 5, 5, 5, 7, 9, 9];
+    let num = 5;
+    let index = find_first_occurrence(&arr, num);
+    match index {
+        Some(i) => println!("The first occurrence of {} is at index {}.", num, i),
+        None => println!("{} is not found in the array.", num),
+    }
+}
+
+3.Given a string of words, implement a function that returns the shortest word in the string.
+---------------------------------------------------------------------------------------------
+
+  fn find_shortest_word(s: &str) -> &str {
+    let mut shortest_word = "";
+    let mut shortest_len = usize::MAX;
+
+    for word in s.split_whitespace() {
+        let len = word.len();
+        if len < shortest_len {
+            shortest_word = word;
+            shortest_len = len;
+        }
+    }
+
+    shortest_word
+}
+
+fn main() {
+    let s = "The quick brown fox jumps over the lazy dog";
+    let shortest_word = find_shortest_word(s);
+    println!("The shortest word in '{}' is '{}'.", s, shortest_word);
+}
+
+
+4.Implement a function that checks whether a given number is prime or not.
+---------------------------------------------------------------------------
+  fn is_prime(n: i32) -> bool {
+    if n <= 1 {
+        return false;
+    }
+    for i in 2..=(n as f64).sqrt() as i32 {
+        if n % i == 0 {
+            return false;
+        }
+    }
+    true
+}
+
+fn main() {
+    let n = 17;
+    if is_prime(n) {
+        println!("{} is prime.", n);
+    } else {
+        println!("{} is not prime.", n);
+    }
+}
+
+5.Given a sorted array of integers, implement a function that returns the median of the array.
+----------------------------------------------------------------------------------------------
+  fn find_median(arr: &[i32]) -> f64 {
+    let n = arr.len();
+    if n % 2 == 0 {
+        let mid_right = n / 2;
+        let mid_left = mid_right - 1;
+        (arr[mid_left] + arr[mid_right]) as f64 / 2.0
+    } else {
+        arr[n / 2] as f64
+    }
+}
+
+fn main() {
+    let arr = [1, 2, 3, 4, 5, 6];
+    let median = find_median(&arr);
+    println!("The median of {:?} is {}.", arr, median);
+}
+
+6.Implement a function that finds the longest common prefix of a given set of strings.
+--------------------------------------------------------------------------------------
+fn longest_common_prefix(strings: &[&str]) -> &str {
+    let first_string = strings.get(0).unwrap_or(&"");
+    for (i, c) in first_string.char_indices() {
+        for string in strings.iter().skip(1) {
+            if i >= string.len() || c != string.chars().nth(i).unwrap() {
+                return &first_string[0..i];
+            }
+        }
+    }
+    first_string
+}
+
+fn main() {
+    let strings = ["flower", "flow", "flight"];
+    let prefix = longest_common_prefix(&strings);
+    println!("The longest common prefix of {:?} is {}.", strings, prefix);
+}
+
+7.Implement a function that returns the kth smallest element in a given array.
+------------------------------------------------------------------------------
+
+fn kth_smallest_element(arr: &[i32], k: usize) -> Option<i32> {
+    if k > arr.len() {
+        return None;
+    }
+    let mut sorted_arr = arr.to_vec();
+    sorted_arr.sort();
+    Some(sorted_arr[k - 1])
+}
+
+fn main() {
+    let arr = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5];
+    let k = 4;
+    let kth_smallest = kth_smallest_element(&arr, k);
+    match kth_smallest {
+        Some(num) => println!("The {}th smallest element in {:?} is {}.", k, arr, num),
+        None => println!("The input array is too small to find the {}th smallest element.", k),
+    }
+}
+
+
+8.Given a binary tree, implement a function that returns the maximum depth of the tree.
+---------------------------------------------------------------------------------------
+
+struct TreeNode {
+    val: i32,
+    left: Option<Box<TreeNode>>,
+    right: Option<Box<TreeNode>>,
+}
+
+impl TreeNode {
+    fn new(val: i32, left: Option<Box<TreeNode>>, right: Option<Box<TreeNode>>) -> Self {
+        TreeNode { val, left, right }
+    }
+}
+
+fn max_depth(root: Option<Box<TreeNode>>) -> i32 {
+    match root {
+        Some(node) => {
+            let left_depth = max_depth(node.left);
+            let right_depth = max_depth(node.right);
+            1 + left_depth.max(right_depth)
+        },
+        None => 0
+    }
+}
+
+fn main() {
+    let tree = Some(Box::new(TreeNode::new(3,
+        Some(Box::new(TreeNode::new(9, None, None))),
+        Some(Box::new(TreeNode::new(20,
+            Some(Box::new(TreeNode::new(15, None, None))),
+            Some(Box::new(TreeNode::new(7, None, None))),
+        ))),
+    )));
+    let max_depth = max_depth(tree);
+    println!("The maximum depth of the tree is {}.", max_depth);
+}
+
+9.Reverse a string in Rust
+-----------------------------------------------------------------
+
+fn reverse_string(s: String) -> String {
+    s.chars().rev().collect()
+}
+
+fn main() {
+    let s = String::from("Hello, world!");
+    let reversed = reverse_string(s);
+    println!("Original: {}", s);
+    println!("Reversed: {}", reversed);
+}
+
+10.Check if a number is prime in Rust
+--------------------------------------------
+
+fn is_prime(n: u64) -> bool {
+    if n <= 1 {
+        return false;
+    }
+    for i in 2..=n / 2 {
+        if n % i == 0 {
+            return false;
+        }
+    }
+    true
+}
+
+fn main() {
+    let n = 17;
+    if is_prime(n) {
+        println!("{} is prime.", n);
+    } else {
+        println!("{} is not prime.", n);
+    }
+}
+
+11.Merge two sorted arrays in Rust
+--------------------------------------
+
+fn merge_sorted_arrays(arr1: &[i32], arr2: &[i32]) -> Vec<i32> {
+    let mut result = Vec::new();
+    let mut i = 0;
+    let mut j = 0;
+    while i < arr1.len() && j < arr2.len() {
+        if arr1[i] <= arr2[j] {
+            result.push(arr1[i]);
+            i += 1;
+        } else {
+            result.push(arr2[j]);
+            j += 1;
+        }
+    }
+    result.extend_from_slice(&arr1[i..]);
+    result.extend_from_slice(&arr2[j..]);
+    result
+}
+
+fn main() {
+    let arr1 = [1, 3, 5, 7, 9];
+    let arr2 = [2, 4, 6, 8, 10];
+    let merged = merge_sorted_arrays(&arr1, &arr2);
+    println!("Merged: {:?}", merged);
+}
+
+
+12.Find the maximum subarray sum in Rust
+---------------------------------------------
+
+fn max_subarray_sum(arr: &[i32]) -> i32 {
+    let mut max_sum = arr[0];
+    let mut cur_sum = arr[0];
+    for i in 1..arr.len() {
+        cur_sum = cur_sum.max(0) + arr[i];
+        max_sum = max_sum.max(cur_sum);
+    }
+    max_sum
+}
+
+fn main() {
+    let arr = [1, -3, 2, 1, -1];
+    let max_sum = max_subarray_sum(&arr);
+    println!("Maximum subarray sum: {}", max_sum);
+}
